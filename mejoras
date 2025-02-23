@@ -1,0 +1,5 @@
+Moderación: Si necesitas controlar el spam, puedes agregar límites de tweets por IP.
+
+Persistencia de nombres temporales: Podrías usar localStorage para recordar nombres en la sesión.
+
+Likes sin cuentas: Se pueden manejar usando IPs o cookies.
