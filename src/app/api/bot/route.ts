@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
-import Database from "better-sqlite3";
-
-// Inicializar base de datos
-const db = new Database("database.sqlite");
+import { db } from "@/app/query/db";
 
 // Inicializar OpenAI
 const openai = new OpenAI({

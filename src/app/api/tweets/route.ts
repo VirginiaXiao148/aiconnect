@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-import Database from "better-sqlite3";
-
-const db = new Database("database.sqlite");
+import { db } from "@/app/query/db";
 
 export async function POST(req: Request) {
     try {
