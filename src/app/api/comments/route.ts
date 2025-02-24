@@ -1,7 +1,7 @@
 import { db } from "@/app/query/db";
 
 // GET - Obtener comentarios de un tweet
-export async function GET(req) {
+export async function GET(req: Request) {
     const url = new URL(req.url);
     const tweetId = url.searchParams.get('tweetId');  // Obtener el tweetId desde la URL
     if (!tweetId) {
@@ -18,7 +18,7 @@ export async function GET(req) {
 }
 
 // POST - Comentar un tweet
-export async function POST(req) {
+export async function POST(req: Request) {
     try {
         const { tweetId, content, author = "Anónimo" } = await req.json();
 
