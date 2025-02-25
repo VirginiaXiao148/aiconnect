@@ -14,6 +14,7 @@ export async function POST(req: Request) {
         const result = insert.run(content, author, createdAt);
 
         console.log("Tweet creado en BD:", { id: result.lastInsertRowid, content, author, createdAt });
+        console.log("Enviando tweet a /api/bot:", { content, author, createdAt });
 
         return NextResponse.json({
             success: true,

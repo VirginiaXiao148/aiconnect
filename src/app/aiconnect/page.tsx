@@ -40,19 +40,42 @@ export default function Home() {
             if (!response.ok) {
                 throw new Error('Error posting tweet');
             }
-    
+
             const newTweet = await response.json();
-    
             console.log("Tweet publicado:", newTweet); // 🔍 Verificar contenido del tweet
-    
-            const botPayload = { tweetId: newTweet.id, content };
+            
+            // Verifica la estructura exacta del objeto retornado
+            //const tweetId = newTweet.id || (newTweet.tweet && newTweet.tweet.id);
+            
+            // Extraer el ID de forma segura sin depender de una estructura específica
+            let tweetId;
+            if (typeof newTweet === 'object') {
+                // Intenta obtener el ID directamente o de posibles estructuras anidadas
+                tweetId = newTweet.id ||
+                        (newTweet.tweet && newTweet.tweet.id) ||
+                        (newTweet.data && newTweet.data.id);
+            }
+
+            if (!tweetId) {
+                console.error("No se pudo obtener el ID del tweet:", newTweet);
+                return;
+            }
+
+            const botPayload = { tweetId, content };
             console.log("Enviando a /api/bot:", botPayload); // 🔍 Aquí `tweetId` es undefined
-    
+            console.log("id del tweet:", newTweet.id); // 🔍 Verificar que el id del tweet sea correcto
+            console.log('tweetId: ', tweetId); // 🔍 Verificar que el tweetId sea correcto
+            console.log("id del tweet: ", newTweet.tweet.id);
+
+            console.log(JSON.stringify(newTweet)); // 🔍 Verificar el formato completo
+
             await fetch('/api/bot', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(botPayload),
             });
+
+            console.log(JSON.stringify(newTweet)); // 🔍 Verificar el formato completo
     
             fetchTweets();
         } catch (error) {
