@@ -1,11 +1,6 @@
 import { NextResponse } from "next/server";
-import ollama from "ollama";
 import { db } from "@/app/query/db";
-
-// Inicializar OpenAI
-/* const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-}); */
+import ollama from "ollama"; // Importamos Ollama
 
 export async function POST(req: Request) {
     try {
@@ -25,17 +20,42 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Faltan datos", received: body }, { status: 400 });
         }
 
+        // 📌 **Paso 1: Moderar el contenido antes de responder**
         try {
-            console.log("Intentando llamar a OpenAI con:", content);
-        
+            console.log("Verificando contenido con Ollama...");
+
+            const moderationResponse = await ollama.chat({
+                model: "llama3",
+                messages: [
+                    { role: "system", content: "Eres un moderador de contenido. Revisa el siguiente tweet y responde con 'OK' si es apropiado o 'ELIMINAR' si es inapropiado." },
+                    { role: "user", content: `Revisa este tweet: "${content}"` }
+                ],
+            });
+
+            const moderationResult = moderationResponse.message.content.trim();
+            console.log("Resultado de la moderación:", moderationResult);
+
+            if (moderationResult.toUpperCase() === "ELIMINAR") {
+                console.warn("Tweet eliminado por contenido inapropiado:", content);
+                return NextResponse.json({ error: "Tweet eliminado por moderación" }, { status: 403 });
+            }
+
+        } catch (moderationError) {
+            console.error("Error en la moderación:", moderationError);
+            return NextResponse.json({ error: "Error en la moderación", details: moderationError.message }, { status: 500 });
+        }
+
+        // 📌 **Paso 2: Generar respuesta con la IA**
+        try {
+            console.log("Generando respuesta con Ollama...");
             const response = await ollama.chat({
                 model: "llama3",
                 messages: [{ role: "user", content: `Responde a este tweet: "${content}"` }],
             });
-        
-            console.log("Respuesta de OpenAI recibida:", response);
+
             const botResponse = response.message.content || "No pude generar respuesta.";
-        
+
+            // 📌 **Paso 3: Guardar la respuesta en la base de datos**
             try {
                 const stmt = db.prepare("INSERT INTO comments (tweetId, content, author) VALUES (?, ?, ?)");
                 stmt.run(tweetId, botResponse, "AI_Bot");
@@ -44,9 +64,9 @@ export async function POST(req: Request) {
                 console.error("Error al insertar en la base de datos:", dbError);
                 return NextResponse.json({ error: "Error de base de datos", details: dbError.message }, { status: 500 });
             }
-        
+
             return NextResponse.json({ success: true, botResponse }, { status: 201 });
-        
+
         } catch (ollamaError) {
             console.error("Error con Ollama:", ollamaError);
             return NextResponse.json({
@@ -54,7 +74,7 @@ export async function POST(req: Request) {
                 details: ollamaError.message
             }, { status: 500 });
         }
-        
+
     } catch (error) {
         console.error("Error general en /api/bot:", error);
         return NextResponse.json({ error: "Error al generar respuesta", details: error.message }, { status: 500 });
