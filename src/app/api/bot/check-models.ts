@@ -12,15 +12,14 @@ export async function checkModels() {
         
         // Opción 2: Verificar GPT-4 específicamente
         try {
-        // Intenta una petición simple para verificar el acceso
-        const completion = await openai.chat.completions.create({
-            model: "gpt-4",
-            messages: [{ role: "user", content: "Hola" }],
-            max_tokens: 5
-        });
-        console.log("GPT-4 está disponible:", completion);
+            const completion = await openai.chat.completions.create({
+                model: "gpt-4o",
+                messages: [{ role: "user", content: "Hola" }],
+                max_tokens: 5
+            });
+            console.log("GPT-4 está disponible:", completion);
         } catch (error) {
-        console.error("Error con GPT-4:", error.message);
+            console.error("Error con GPT-4:", error.message);
         }
     } catch (error) {
         console.error("Error al verificar modelos:", error);
