@@ -5,8 +5,12 @@ import PostInput from '../components/PostInput';
 import TweetCard from '../components/TweetCard';
 
 export default function Home() {
-    const [tweets, setTweets] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
+
+    const [tweets, setTweets] = useState([]);
+    const [comments, setComments] = useState([]);
+    const [likes, setLikes] = useState([]);
+
 
     const fetchTweets = async () => {
         try {
@@ -25,8 +29,22 @@ export default function Home() {
         }
     };
 
+    const fetchComments = async () => {
+        const response = await fetch('/api/comments');
+        const data = await response.json();
+        setComments(data);
+    };
+
+    const fetchLikes = async () => {
+        const response = await fetch('/api/likes');
+        const data = await response.json();
+        setLikes(data);
+    };
+
     useEffect(() => {
         fetchTweets();
+        fetchComments();
+        fetchLikes();
     }, []);
 
     const addTweet = async (username: string, content: string) => {
@@ -81,6 +99,9 @@ export default function Home() {
                 if (!botResponse.ok) {
                     throw new Error(`Error del bot: ${botResponse.status} - ${responseText}`);
                 }
+
+                fetchComments();
+                fetchLikes();
             } catch (botError) {
                 console.error("Error detallado:", botError);
             }
@@ -91,6 +112,24 @@ export default function Home() {
         }
     };
 
+    const addComment = async (tweetId, content) => {
+        try {
+            const res = await fetch("/api/comments", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ tweetId, content }),
+            });
+    
+            if (!res.ok) {
+                throw new Error("Error al agregar comentario");
+            }
+    
+            fetchComments(); // ✅ ACTUALIZAR COMENTARIOS SOLO SI LA SOLICITUD FUE EXITOSA
+        } catch (error) {
+            console.error("Error al agregar comentario:", error);
+        }
+    };
+    
     const filteredTweets = tweets.filter((tweet) =>
         tweet.content.toLowerCase().includes(searchTerm.toLowerCase())
     );

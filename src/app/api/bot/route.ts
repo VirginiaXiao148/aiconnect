@@ -57,8 +57,9 @@ export async function POST(req: Request) {
 
             // 📌 **Paso 3: Guardar la respuesta en la base de datos**
             try {
-                const stmt = db.prepare("INSERT INTO comments (tweetId, content, author) VALUES (?, ?, ?)");
-                stmt.run(tweetId, botResponse, "AI_Bot");
+                const createdAt = new Date().toISOString();
+                const stmt = db.prepare("INSERT INTO comments (tweetId, content, author, createdAt) VALUES (?, ?, ?, ?)");
+                stmt.run(tweetId, botResponse, "AI_Bot", createdAt);
                 console.log("Insertado en DB correctamente");
             } catch (dbError) {
                 console.error("Error al insertar en la base de datos:", dbError);
