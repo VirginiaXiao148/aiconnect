@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import PostInput from '../components/PostInput';
 import TweetCard from '../components/TweetCard';
 
@@ -8,9 +8,8 @@ export default function Home() {
     const [searchTerm, setSearchTerm] = useState('');
 
     const [tweets, setTweets] = useState([]);
-    const [comments, setComments] = useState([]);
-    const [likes, setLikes] = useState([]);
-
+    const [likes, setLikes] = useState<Record<string, number>>({});
+    const [comments, setComments] = useState<Record<string, string[]>>({});
 
     const fetchTweets = async () => {
         try {
@@ -29,23 +28,63 @@ export default function Home() {
         }
     };
 
-    const fetchComments = async () => {
+    /* const fetchComments = async () => {
         const response = await fetch('/api/comments');
         const data = await response.json();
         setComments(data);
-    };
+    }; */
 
-    const fetchLikes = async () => {
+    async function fetchComments(tweetId) {
+        try {
+            const response = await fetch(`/api/comments?tweetId=${tweetId}`);
+            if (!response.ok) throw new Error("Error al obtener comentarios");
+    
+            const data = await response.json();
+            console.log("Comentarios:", data);
+    
+            setComments(prev => ({
+                ...prev,
+                [tweetId]: data // Guardar comentarios por tweetId
+            }));
+        } catch (error) {
+            console.error("Error obteniendo comentarios:", error);
+        }
+    }
+
+    /* const fetchLikes = async () => {
         const response = await fetch('/api/likes');
         const data = await response.json();
         setLikes(data);
-    };
+    }; */
+
+    async function fetchLikes(tweetId) {
+        try {
+            const response = await fetch(`/api/likes?tweetId=${tweetId}`);
+            if (!response.ok) throw new Error("Error al obtener likes");
+    
+            const data = await response.json();
+            console.log("Likes:", data);
+    
+            setLikes((prev) => ({
+                ...prev,
+                [tweetId]: data // Se asocian los likes con su tweetId
+            }));
+        } catch (error) {
+            console.error("Error obteniendo likes:", error);
+        }
+    }
 
     useEffect(() => {
         fetchTweets();
-        fetchComments();
         fetchLikes();
     }, []);
+
+    useEffect(() => {
+        tweets.forEach((tweet) => {
+            fetchComments(tweet.id); // ✅ Se asegura de cargar comentarios por tweet
+            fetchLikes(tweet.id); // ✅ Se asegura de cargar likes por tweet
+        });
+    }, [tweets]);
 
     const addTweet = async (username: string, content: string) => {
         try {
@@ -100,13 +139,11 @@ export default function Home() {
                     throw new Error(`Error del bot: ${botResponse.status} - ${responseText}`);
                 }
 
-                fetchComments();
-                fetchLikes();
+                fetchComments(tweetId);
+                fetchLikes(tweetId);
             } catch (botError) {
                 console.error("Error detallado:", botError);
             }
-            
-            fetchTweets();
         } catch (error) {
             console.error('Failed to post tweet:', error);
         }
@@ -124,15 +161,17 @@ export default function Home() {
                 throw new Error("Error al agregar comentario");
             }
     
-            fetchComments(); // ✅ ACTUALIZAR COMENTARIOS SOLO SI LA SOLICITUD FUE EXITOSA
+            fetchComments(tweetId); // ✅ ACTUALIZAR COMENTARIOS SOLO SI LA SOLICITUD FUE EXITOSA
         } catch (error) {
             console.error("Error al agregar comentario:", error);
         }
     };
     
-    const filteredTweets = tweets.filter((tweet) =>
-        tweet.content.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredTweets = useMemo(() => {
+        return tweets.filter((tweet) =>
+            tweet.content.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    }, [tweets, searchTerm]);
 
     return (
         <div className="flex flex-col md:flex-row">
@@ -156,6 +195,10 @@ export default function Home() {
                             username={tweet.username}
                             content={tweet.content}
                             date={tweet.createdAt}
+                            likes={likes[tweet.id] || 0}
+                            comments={comments[tweet.id] || []}
+                            fetchComments={() => fetchComments(tweet.id)} // Permitir recarga manual
+                            fetchLikes={() => fetchLikes(tweet.id)}
                         />
                     ))}
                 </div>
