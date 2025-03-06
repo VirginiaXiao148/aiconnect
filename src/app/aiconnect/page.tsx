@@ -128,6 +128,14 @@ export default function Home() {
             } catch (botError) {
                 console.error("Error detallado:", botError);
             }
+
+            // Add the new tweet to the state without duplicates
+            setTweets((prevTweets) => {
+                if (!prevTweets.some(tweet => tweet.id === tweetId)) {
+                    return [...prevTweets, newTweet];
+                }
+                return prevTweets;
+            });
         } catch (error) {
             console.error('Failed to post tweet:', error);
         }
