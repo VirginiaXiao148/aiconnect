@@ -1,47 +1,27 @@
 import React, { useState, useEffect } from 'react';
 
+interface Comment {
+    id: string;
+    tweetId: string;
+    author: string;
+    content: string;
+    createdAt: string;
+}
+
 interface TweetCardProps {
     id: string;
     username: string;
     content: string;
     date: string;
     likes: number;
-    comments: any[];
+    comments: Comment[];
     fetchComments: () => Promise<void>;
     fetchLikes: () => Promise<void>;
 }
 
-const TweetCard: React.FC<TweetCardProps> = ({ id, username, content, date }) => {
-    const [likes, setLikes] = useState(0);
-    const [comments, setComments] = useState<string[]>([]);
+const TweetCard: React.FC<TweetCardProps> = ({ id, username, content, date, likes, comments, fetchComments, fetchLikes }) => {
     const [newComment, setNewComment] = useState('');
     const [loading, setLoading] = useState(false); // Controla el estado del botón de comentar
-
-    useEffect(() => {
-        // Cargar los likes, retweets y comentarios desde la API
-        const fetchData = async () => {
-            try {
-                const [likesRes, commentsRes] = await Promise.all([
-                    fetch(`/api/likes?tweetId=${id}`),
-                    fetch(`/api/comments?tweetId=${id}`)
-                ]);
-
-                if (likesRes.ok) {
-                    const likesData = await likesRes.json();
-                    setLikes(likesData.likes);
-                }
-
-                if (commentsRes.ok) {
-                    const commentsData = await commentsRes.json();
-                    setComments(commentsData);
-                }
-            } catch (error) {
-                console.error("Error cargando datos del tweet:", error);
-            }
-        };
-
-        fetchData();
-    }, [id]);
 
     const handleLike = async () => {
         try {
@@ -52,7 +32,7 @@ const TweetCard: React.FC<TweetCardProps> = ({ id, username, content, date }) =>
             });
 
             if (response.ok) {
-                setLikes(likes + 1);
+                fetchLikes();
             }
         } catch (error) {
             console.error("Error al dar like:", error);
@@ -71,7 +51,7 @@ const TweetCard: React.FC<TweetCardProps> = ({ id, username, content, date }) =>
             });
 
             if (response.ok) {
-                setComments([...comments, newComment]);
+                fetchComments();
                 setNewComment('');
             }
         } catch (error) {
@@ -107,8 +87,8 @@ const TweetCard: React.FC<TweetCardProps> = ({ id, username, content, date }) =>
                     {loading ? "Comentando..." : "Comentar"}
                 </button>
                 <div className="mt-2">
-                    {comments.map((comment, index) => (
-                        <p key={index} className="text-gray-700">💬 {comment}</p>
+                    {comments.map((comment) => (
+                        <p key={comment.id} className="text-gray-700">💬 {comment.content}</p>
                     ))}
                 </div>
             </div>

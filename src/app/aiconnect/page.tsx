@@ -9,7 +9,7 @@ export default function Home() {
 
     const [tweets, setTweets] = useState([]);
     const [likes, setLikes] = useState<Record<string, number>>({});
-    const [comments, setComments] = useState<Record<string, string[]>>({});
+    const [comments, setComments] = useState<Record<string, { id: string, tweetId: string, author: string, content: string, createdAt: string }[]>>({});
 
     const fetchTweets = async () => {
         try {
@@ -28,12 +28,6 @@ export default function Home() {
         }
     };
 
-    /* const fetchComments = async () => {
-        const response = await fetch('/api/comments');
-        const data = await response.json();
-        setComments(data);
-    }; */
-
     async function fetchComments(tweetId) {
         try {
             const response = await fetch(`/api/comments?tweetId=${tweetId}`);
@@ -50,12 +44,6 @@ export default function Home() {
             console.error("Error obteniendo comentarios:", error);
         }
     }
-
-    /* const fetchLikes = async () => {
-        const response = await fetch('/api/likes');
-        const data = await response.json();
-        setLikes(data);
-    }; */
 
     async function fetchLikes(tweetId) {
         try {
@@ -101,7 +89,6 @@ export default function Home() {
             const newTweet = await response.json();
             console.log("Tweet publicado:", newTweet);
             
-            // Extraer el ID correctamente según la estructura que muestran los logs
             let tweetId;
             if (newTweet && newTweet.tweet && newTweet.tweet.id) {
                 tweetId = newTweet.tweet.id;
@@ -114,17 +101,15 @@ export default function Home() {
                 return;
             }
     
-            // Usar el contenido correcto
             const tweetContent = newTweet.tweet?.content || content;
             
             const botPayload = {
-                tweetId: Number(tweetId), // Asegurarse que sea número si tu API lo espera así
+                tweetId: Number(tweetId),
                 content: tweetContent
             };
             
             console.log("Enviando a /api/bot:", JSON.stringify(botPayload));
     
-            // Probar con fetch manualmente para ver el error completo
             try {
                 const botResponse = await fetch('/api/bot', {
                     method: 'POST',
@@ -196,7 +181,7 @@ export default function Home() {
                             content={tweet.content}
                             date={tweet.createdAt}
                             likes={likes[tweet.id] || 0}
-                            comments={comments[tweet.id] || []}
+                            comments={comments[tweet.id] || []}  // ✅ Mostrar comentarios solo si existen
                             fetchComments={() => fetchComments(tweet.id)} // Permitir recarga manual
                             fetchLikes={() => fetchLikes(tweet.id)}
                         />
