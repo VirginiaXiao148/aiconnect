@@ -21,6 +21,7 @@ export async function POST(req: Request) {
         }
 
         // 📌 **Paso 1: Moderar el contenido antes de responder**
+        let moderationResult = "OK";
         try {
             console.log("Verificando contenido con Ollama...");
 
@@ -32,7 +33,7 @@ export async function POST(req: Request) {
                 ],
             });
 
-            const moderationResult = moderationResponse.message.content.trim();
+            moderationResult = moderationResponse.message.content.trim();
             console.log("Resultado de la moderación:", moderationResult);
 
             if (moderationResult.toUpperCase() === "ELIMINAR") {
@@ -42,7 +43,8 @@ export async function POST(req: Request) {
 
         } catch (moderationError) {
             console.error("Error en la moderación:", moderationError);
-            return NextResponse.json({ error: "Error en la moderación", details: moderationError.message }, { status: 500 });
+            // Fallback to allow the tweet if moderation fails
+            moderationResult = "OK";
         }
 
         // 📌 **Paso 2: Generar respuesta con la IA**
@@ -81,7 +83,3 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Error al generar respuesta", details: error.message }, { status: 500 });
     }
 }
-
-
-
-
