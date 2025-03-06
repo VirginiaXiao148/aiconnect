@@ -64,7 +64,6 @@ export default function Home() {
 
     useEffect(() => {
         fetchTweets();
-        fetchLikes();
     }, []);
 
     useEffect(() => {
