@@ -4,10 +4,22 @@ import { useState, useEffect, useMemo } from 'react';
 import PostInput from '../components/PostInput';
 import TweetCard from '../components/TweetCard';
 
+function useDebouncedValue(value: string, delay = 300) {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+
+    useEffect(() => {
+        const handler = setTimeout(() => setDebouncedValue(value), delay);
+        return () => clearTimeout(handler);
+    }, [value, delay]);
+
+    return debouncedValue;
+}
+
 export default function Home() {
     const [searchTerm, setSearchTerm] = useState('');
+    const debouncedSearch = useDebouncedValue(searchTerm);
 
-    const [tweets, setTweets] = useState([]);
+    const [tweets, setTweets] = useState<{ id: string, username: string, content: string, createdAt: string }[]>([]);
     const [likes, setLikes] = useState<Record<string, number>>({});
     const [comments, setComments] = useState<Record<string, { id: string, tweetId: string, author: string, content: string, createdAt: string }[]>>({});
 
@@ -67,9 +79,13 @@ export default function Home() {
     }, []);
 
     useEffect(() => {
+        const loadedTweetIds = new Set(Object.keys(comments)); // Evita recargar ya existentes
+    
         tweets.forEach((tweet) => {
-            fetchComments(tweet.id); // ✅ Se asegura de cargar comentarios por tweet
-            fetchLikes(tweet.id); // ✅ Se asegura de cargar likes por tweet
+            if (!loadedTweetIds.has(tweet.id)) {
+                fetchComments(tweet.id);
+                fetchLikes(tweet.id);
+            }
         });
     }, [tweets]);
 
@@ -130,30 +146,30 @@ export default function Home() {
             }
 
             // Add the new tweet to the state without duplicates
-            setTweets((prevTweets) => {
-                if (!prevTweets.some(tweet => tweet.id === tweetId)) {
-                    return [...prevTweets, newTweet];
-                }
-                return prevTweets;
-            });
+            setTweets((prev) => [...new Set([...prev, { ...newTweet, id: tweetId }])]);
+
+            await Promise.all([fetchComments(tweetId), fetchLikes(tweetId)]);
+        
         } catch (error) {
             console.error('Failed to post tweet:', error);
         }
     };
 
-    const addComment = async (tweetId, content) => {
+    const addComment = async (tweetId: string, content: string) => {
         try {
-            const res = await fetch("/api/comments", {
+            const response = await fetch("/api/comments", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ tweetId, content }),
             });
     
-            if (!res.ok) {
-                throw new Error("Error al agregar comentario");
-            }
+            if (!response.ok) throw new Error("Error al agregar comentario");
     
-            fetchComments(tweetId); // ✅ ACTUALIZAR COMENTARIOS SOLO SI LA SOLICITUD FUE EXITOSA
+            const newComment = await response.json();
+            setComments((prev) => ({
+                ...prev,
+                [tweetId]: [...(prev[tweetId] || []), newComment],
+            }));
         } catch (error) {
             console.error("Error al agregar comentario:", error);
         }
@@ -161,9 +177,9 @@ export default function Home() {
     
     const filteredTweets = useMemo(() => {
         return tweets.filter((tweet) =>
-            tweet.content.toLowerCase().includes(searchTerm.toLowerCase())
+            tweet.content.toLowerCase().includes(debouncedSearch.toLowerCase())
         );
-    }, [tweets, searchTerm]);
+    }, [tweets, debouncedSearch]);
 
     return (
         <div className="flex flex-col md:flex-row">
