@@ -52,7 +52,10 @@ export async function POST(req: Request) {
             console.log("Generando respuesta con Ollama...");
             const response = await ollama.chat({
                 model: "llama3",
-                messages: [{ role: "user", content: `Responde a este tweet: "${content}"` }],
+                messages: [
+                    { role: "system", content: "Eres un experto en tecnología. Responde a los tweets con información relacionada con tecnología." },
+                    { role: "user", content: `Responde a este tweet: "${content}"` }
+                ],
             });
 
             const botResponse = response.message.content || "No pude generar respuesta.";
