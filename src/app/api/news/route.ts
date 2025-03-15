@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/app/query/db";
 import ollama from "ollama";
 
-function saveToDatabase(content): boolean {
+function saveToDatabase(content: string): boolean {
     try {
         const createdAt = new Date().toISOString();
         const stmt = db.prepare("INSERT INTO tweets (content, author, createdAt) VALUES (?, ?, ?)");
@@ -16,7 +16,7 @@ function saveToDatabase(content): boolean {
 }
 
 export async function generateNews() {
-    try{
+    try {
         console.log('Generando noticias con Ollama...');
         const response = await ollama.chat({
             model: "llama3",
@@ -36,14 +36,17 @@ export async function generateNews() {
 
         return NextResponse.json({ success: true, content: news }, { status: 201 });
 
-    }catch(error){
+    } catch (error) {
         console.error("Error generando noticia:", error);
         return NextResponse.json({ error: "Error en la generación de noticias" }, { status: 500 });
     }
 }
 
-// Create a new every 6 hours
-setInterval(generateNews, 6 * 60 * 60 * 1000);
+// Create a new post every 6 hours
+// setInterval(generateNews, 6 * 60 * 60 * 1000);
+
+// Create a new post every minute
+setInterval(generateNews, 1 * 60 * 1000);
 
 export async function POST() {
     try {

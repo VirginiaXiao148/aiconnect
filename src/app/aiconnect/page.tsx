@@ -76,6 +76,8 @@ export default function Home() {
 
     useEffect(() => {
         fetchTweets();
+        const interval = setInterval(fetchTweets, 30 * 60 * 1000); // every 30 minutes
+        return () => clearInterval(interval);
     }, []);
 
     useEffect(() => {
@@ -181,6 +183,24 @@ export default function Home() {
         );
     }, [tweets, debouncedSearch]);
 
+    const triggerNewsGeneration = async () => {
+        try {
+            const response = await fetch('/api/news', {
+                method: 'POST',
+            });
+
+            if (!response.ok) {
+                throw new Error('Error generating news');
+            }
+
+            const data = await response.json();
+            console.log('News generated:', data);
+            fetchTweets(); // Fetch the latest tweets after generating news
+        } catch (error) {
+            console.error('Failed to generate news:', error);
+        }
+    };
+
     return (
         <div className="flex flex-col md:flex-row">
             <main className="flex-grow p-4">
@@ -195,6 +215,9 @@ export default function Home() {
                     />
                 </div>
                 <PostInput addTweet={addTweet} />
+                <button onClick={triggerNewsGeneration} className="bg-blue-500 text-white px-4 py-2 rounded-md">
+                    Generate Tech News
+                </button>
                 <div className="mt-4">
                     {filteredTweets.map((tweet) => (
                         <TweetCard
