@@ -2,6 +2,19 @@ import { NextResponse } from "next/server";
 import { db } from "@/app/query/db";
 import ollama from "ollama";
 
+function saveToDatabase(content: string): boolean {
+    try {
+        const createdAt = new Date().toISOString();
+        const stmt = db.prepare("INSERT INTO tweets (content, author, createdAt) VALUES (?, ?, ?)");
+        stmt.run(content, "AI_Bot", createdAt);
+        console.log("Respuesta insertada en la base de datos");
+        return true;
+    } catch (error) {
+        console.error("Error al insertar en la base de datos:", error);
+        return false;
+    }
+}
+
 // Función para obtener noticias actuales desde una API externa
 async function fetchLatestNews() {
     try {
@@ -48,9 +61,7 @@ async function generateNews() {
         }
 
         // Guardar en la base de datos
-        const createdAt = new Date().toISOString();
-        const stmt = db.prepare("INSERT INTO tweets (username, content, createdAt) VALUES (?, ?, ?)");
-        stmt.run("AI_NewsBot", newsContent, createdAt);
+        saveToDatabase(newsContent);
     } catch (error) {
         console.error("Error generando noticia:", error);
     }
