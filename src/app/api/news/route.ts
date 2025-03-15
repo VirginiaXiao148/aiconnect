@@ -15,7 +15,7 @@ function saveToDatabase(content): boolean {
     }
 }
 
-export async function POST(req: Request) {
+export async function generateNews() {
     try{
         console.log('Generando noticias con Ollama...');
         const response = await ollama.chat({
@@ -38,6 +38,18 @@ export async function POST(req: Request) {
 
     }catch(error){
         console.error("Error generando noticia:", error);
+        return NextResponse.json({ error: "Error en la generación de noticias" }, { status: 500 });
+    }
+}
+
+// Create a new every 6 hours
+setInterval(generateNews, 6 * 60 * 60 * 1000);
+
+export async function POST() {
+    try {
+        await generateNews();
+        return NextResponse.json({ success: true }, { status: 201 });
+    } catch (error) {
         return NextResponse.json({ error: "Error en la generación de noticias" }, { status: 500 });
     }
 }
