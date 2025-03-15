@@ -43,10 +43,10 @@ export async function generateNews() {
 }
 
 // Create a new post every 6 hours
-// setInterval(generateNews, 6 * 60 * 60 * 1000);
+setInterval(generateNews, 6 * 60 * 60 * 1000);
 
 // Create a new post every minute
-setInterval(generateNews, 1 * 60 * 1000);
+// setInterval(generateNews, 1 * 60 * 1000);
 
 export async function POST() {
     try {
