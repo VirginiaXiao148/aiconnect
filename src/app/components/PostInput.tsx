@@ -21,23 +21,37 @@ export default function PostInput({ addTweet }) {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="p-4 bg-white shadow-md rounded-md">
-            <input
-                type="text"
-                placeholder="Tu nombre (opcional)"
-                value={author}
-                onChange={(e) => setAuthor(e.target.value)}
-                className="border p-2 rounded-md w-full"
-            />
-            <textarea
-                placeholder="¿Qué está pasando?"
+        <div className="fixed bottom-5 right-5">
+            <button
+                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-lg"
+                onClick={() => document.getElementById("tweetModal").showModal()}
+            >
+                ➕
+            </button>
+        
+            <dialog id="tweetModal" className="bg-gray-900 p-6 rounded-lg">
+                <h2 className="text-xl font-bold text-white mb-4">Nuevo Tweet</h2>
+                <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                className="border p-2 rounded-md w-full mt-2"
-            />
-            <button type="submit" className="w-full p-2 bg-blue-500 text-white rounded-md hover:bg-blue-400">
-                Tweet
-            </button>
-        </form>
+                className="w-full p-2 bg-gray-800 text-white rounded-md"
+                placeholder="Escribe tu tweet..."
+                ></textarea>
+                <div className="mt-4 flex justify-end">
+                <button
+                    className="bg-red-500 text-white px-3 py-1 rounded-md mr-2"
+                    onClick={() => document.getElementById("tweetModal").close()}
+                >
+                    Cancelar
+                </button>
+                <button
+                    className="bg-green-500 text-white px-3 py-1 rounded-md"
+                    onClick={handleSubmit}
+                >
+                    Publicar
+                </button>
+                </div>
+            </dialog>
+        </div>
     );
 }

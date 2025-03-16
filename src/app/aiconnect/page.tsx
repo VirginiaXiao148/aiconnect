@@ -202,20 +202,20 @@ export default function Home() {
     };
 
     return (
-        <div className="flex flex-col md:flex-row">
+        <div className="flex flex-col md:flex-row bg-darkbg min-h-screen text-cyberblue">
             <main className="flex-grow p-4">
-                <h1 className="text-2xl font-bold mb-4">AIConnect</h1>
+                <h1 className="text-4xl font-bold mb-4 text-cyberpink">AIConnect</h1>
                 <div className="mb-4">
                     <input
                         type="text"
                         placeholder="Buscar"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="border p-2 rounded-md w-full"
+                        className="border border-cyberblue p-2 rounded-md w-full bg-transparent text-cyberblue"
                     />
                 </div>
                 <PostInput addTweet={addTweet} />
-                <button onClick={triggerNewsGeneration} className="bg-blue-500 text-white px-4 py-2 rounded-md">
+                <button onClick={triggerNewsGeneration} className="bg-cyberblue text-darkbg px-4 py-2 rounded-md shadow-neon">
                     Generate Tech News
                 </button>
                 <div className="mt-4">
@@ -230,6 +230,7 @@ export default function Home() {
                             comments={comments[tweet.id] || []}  // ✅ Mostrar comentarios solo si existen
                             fetchComments={() => fetchComments(tweet.id)} // Permitir recarga manual
                             fetchLikes={() => fetchLikes(tweet.id)}
+                            //className="bg-darkbg border border-cyberpink p-4 rounded-lg shadow-neon"
                         />
                     ))}
                 </div>
