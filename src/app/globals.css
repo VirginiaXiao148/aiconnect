@@ -3,24 +3,55 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0a0a0a;
+  --foreground: #00ff00;
+  --primary: #ff00ff;
+  --secondary: #00ffff;
+  --accent: #ff9900;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #000000;
+    --foreground: #00ff00;
+    --primary: #ff00ff;
+    --secondary: #00ffff;
+    --accent: #ff9900;
   }
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Courier New', Courier, monospace;
 }
 
+a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--secondary);
+  text-shadow: 0 0 8px var(--secondary);
+}
+
+button {
+  background: var(--primary);
+  color: var(--background);
+  border: 2px solid var(--secondary);
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background: var(--secondary);
+  color: var(--foreground);
+  box-shadow: 0 0 8px var(--accent), 0 0 16px var(--accent), 0 0 24px var(--accent);
+}
 
 .shadow-neon {
-  box-shadow: 0 0 8px #00ffff, 0 0 16px #00ffff, 0 0 24px #00ffff;
+  box-shadow: 0 0 8px var(--accent), 0 0 16px var(--accent), 0 0 24px var(--accent);
 }
