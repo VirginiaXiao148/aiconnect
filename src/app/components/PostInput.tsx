@@ -17,27 +17,49 @@ export default function PostInput({ addTweet }) {
             setContent("");
             setAuthor("");
             addTweet(author || "Anónimo", content);
+            document.getElementById("tweetModal").close();
         }
     };
 
     return (
-        <form onSubmit={handleSubmit} className="p-4 bg-black shadow-neon rounded-md">
-            <input
-                type="text"
-                placeholder="Tu nombre (opcional)"
-                value={author}
-                onChange={(e) => setAuthor(e.target.value)}
-                className="border border-primary p-2 rounded-md w-full bg-black text-foreground placeholder-secondary"
-            />
-            <textarea
-                placeholder="¿Qué está pasando?"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                className="border border-primary p-2 rounded-md w-full mt-2 bg-black text-foreground placeholder-secondary"
-            />
-            <button type="submit" className="w-full p-2 bg-primary text-background rounded-md hover:bg-secondary shadow-neon">
-                Tweet
+        <div className="fixed bottom-5 right-5">
+            <button
+                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-lg"
+                onClick={() => document.getElementById("tweetModal").showModal()}
+            >
+                ➕
             </button>
-        </form>
+
+            <dialog id="tweetModal" className="bg-gray-900 p-6 rounded-lg">
+                <h2 className="text-xl font-bold text-white mb-4">Nuevo Tweet</h2>
+                <input
+                    type="text"
+                    placeholder="Tu nombre (opcional)"
+                    value={author}
+                    onChange={(e) => setAuthor(e.target.value)}
+                    className="w-full p-2 bg-gray-800 text-white rounded-md mb-2"
+                />
+                <textarea
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    className="w-full p-2 bg-gray-800 text-white rounded-md"
+                    placeholder="Escribe tu tweet..."
+                ></textarea>
+                <div className="mt-4 flex justify-end">
+                    <button
+                        className="bg-red-500 text-white px-3 py-1 rounded-md mr-2"
+                        onClick={() => document.getElementById("tweetModal").close()}
+                    >
+                        Cancelar
+                    </button>
+                    <button
+                        className="bg-green-500 text-white px-3 py-1 rounded-md"
+                        onClick={handleSubmit}
+                    >
+                        Publicar
+                    </button>
+                </div>
+            </dialog>
+        </div>
     );
 }
