@@ -89,7 +89,8 @@ const TweetCard: React.FC<TweetCardProps> = ({ id, username, content, date, like
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                     placeholder="Escribe un comentario..."
-                    className="border border-cyberblue bg-transparent text-cyberblue p-1 rounded w-full placeholder-gray-500"
+                    // className="border border-cyberblue bg-transparent text-cyberblue p-1 rounded w-full placeholder-gray-500"
+                    className='comment-input'
                 />
                 <button
                     onClick={handleComment}
@@ -100,7 +101,7 @@ const TweetCard: React.FC<TweetCardProps> = ({ id, username, content, date, like
                 </button>
                 <div className="mt-2">
                     {comments.map((comment) => (
-                        <p key={comment.id} className="text-cybergreen">💬 {comment.content}</p>
+                        <p key={comment.id} className="cybergreen-text">💬 {comment.content}</p>
                     ))}
                 </div>
             </div>
