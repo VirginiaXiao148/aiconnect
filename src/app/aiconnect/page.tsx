@@ -204,7 +204,7 @@ export default function Home() {
     return (
         <div className="flex flex-col md:flex-row bg-darkbg min-h-screen text-cyberblue">
             <main className="flex-grow p-4">
-                <h1 className="text-4xl font-bold mb-4 text-cyberpink">AIConnect</h1>
+            <h1 className="text-4xl font-bold text-cyberpink glitch">AIConnect</h1>
                 <div className="mb-4">
                     <input
                         type="text"

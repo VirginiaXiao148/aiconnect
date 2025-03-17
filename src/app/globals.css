@@ -20,20 +20,62 @@
   }
 }
 
+@keyframes cyberBackground {
+  0% { background-position: 0 0; }
+  100% { background-position: 1000px 1000px; }
+}
+
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: 'Courier New', Courier, monospace;
+  background: repeating-linear-gradient(
+    45deg,
+    #000000,
+    #0a0a0a 10px,
+    #1a1a1a 20px
+  );
+  animation: cyberBackground 10s infinite linear;
+}
+
+h1, h2 {
+  text-transform: uppercase;
+  font-weight: bold;
+  text-shadow: 0 0 10px var(--primary), 0 0 20px var(--secondary);
+}
+
+.tweet-text {
+  color: #ffffff !important; /* Blanco brillante */
+  text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff; /* Sombra neón azul */
+}
+
+.cybergreen-text {
+  color: #00ff00 !important;
+  text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00;
+}
+
+.cyberpink-text {
+  color: #ff00ff !important;
+  text-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff;
+}
+
+.cyberblue-text {
+  color: #00ffff !important;
+  text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff;
+}
+
+.cyberorange-text {
+  color: #ff9900 !important;
+  text-shadow: 0 0 5px #ff9900, 0 0 10px #ff9900;
 }
 
 a {
   color: var(--primary);
   text-decoration: none;
+  text-transform: uppercase;
+  font-weight: bold;
+  text-shadow: 0 0 5px var(--primary), 0 0 10px var(--secondary);
 }
 
 a:hover {
-  color: var(--secondary);
-  text-shadow: 0 0 8px var(--secondary);
+  text-shadow: 0 0 10px var(--secondary), 0 0 20px var(--secondary);
 }
 
 button {
@@ -44,14 +86,29 @@ button {
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  text-transform: uppercase;
+  font-weight: bold;
 }
 
 button:hover {
   background: var(--secondary);
   color: var(--foreground);
   box-shadow: 0 0 8px var(--accent), 0 0 16px var(--accent), 0 0 24px var(--accent);
+  transform: scale(1.1);
 }
 
 .shadow-neon {
-  box-shadow: 0 0 8px var(--accent), 0 0 16px var(--accent), 0 0 24px var(--accent);
+  box-shadow: 0 0 5px var(--accent), 0 0 10px var(--accent), 0 0 15px var(--accent);
+}
+
+
+@keyframes glitch {
+  0% { text-shadow: 2px 2px var(--primary), -2px -2px var(--secondary); }
+  25% { text-shadow: -2px -2px var(--primary), 2px 2px var(--secondary); }
+  50% { text-shadow: 2px -2px var(--primary), -2px 2px var(--secondary); }
+  100% { text-shadow: -2px 2px var(--primary), 2px -2px var(--secondary); }
+}
+
+.glitch {
+  animation: glitch 0.3s infinite alternate;
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 interface Comment {
     id: string;
@@ -21,7 +21,7 @@ interface TweetCardProps {
 
 const TweetCard: React.FC<TweetCardProps> = ({ id, username, content, date, likes, comments, fetchComments, fetchLikes }) => {
     const [newComment, setNewComment] = useState('');
-    const [loading, setLoading] = useState(false); // Controla el estado del botón de comentar
+    const [loading, setLoading] = useState(false);
 
     const handleLike = async () => {
         try {
@@ -62,33 +62,45 @@ const TweetCard: React.FC<TweetCardProps> = ({ id, username, content, date, like
     };
 
     return (
-        <div className="border rounded-lg p-4 shadow-md bg-white mb-4">
+        <div className="border-2 border-cyberpink bg-darkbg p-4 rounded-xl shadow-neon transition-all hover:scale-105">
+            {/* Nombre de usuario y fecha */}
             <div className="flex items-center mb-2">
-                <div className="font-bold text-lg">{username}</div>
-                <div className="text-gray-500 text-sm ml-auto">{date}</div>
+                <h2 className="text-cyberblue text-lg font-bold">@{username}</h2>
+                <span className="text-cybergreen text-sm ml-auto">{date}</span>
             </div>
-            <div className="text-gray-800 mb-2">{content}</div>
+
+            {/* Contenido del Tweet */}
+            <p className="tweet-text">{content}</p>
+
+            {/* Likes */}
             <div className="flex space-x-4 mt-2">
-                <button onClick={handleLike} className="text-blue-500">👍 {likes}</button>
+                <button 
+                    onClick={handleLike} 
+                    className="text-cybergreen hover:text-cyberorange transition-all"
+                >
+                    👍 {likes}
+                </button>
             </div>
+
+            {/* Comentarios */}
             <div className="mt-2">
                 <input
                     type="text"
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                     placeholder="Escribe un comentario..."
-                    className="border p-1 rounded w-full"
+                    className="border border-cyberblue bg-transparent text-cyberblue p-1 rounded w-full placeholder-gray-500"
                 />
                 <button
                     onClick={handleComment}
-                    className="bg-blue-500 text-white px-2 py-1 rounded mt-1 disabled:opacity-50"
-                    disabled={loading} // Deshabilita el botón si está en proceso de envío
+                    className="bg-cyberpink text-white px-3 py-1 rounded mt-1 disabled:opacity-50 hover:shadow-neon"
+                    disabled={loading}
                 >
                     {loading ? "Comentando..." : "Comentar"}
                 </button>
                 <div className="mt-2">
                     {comments.map((comment) => (
-                        <p key={comment.id} className="text-gray-700">💬 {comment.content}</p>
+                        <p key={comment.id} className="text-cybergreen">💬 {comment.content}</p>
                     ))}
                 </div>
             </div>
