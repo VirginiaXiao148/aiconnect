@@ -41,6 +41,15 @@ h1, h2 {
   text-shadow: 0 0 10px var(--primary), 0 0 20px var(--secondary);
 }
 
+h2 {
+  color: var(--secondary);
+}
+
+span {
+  color: var(--foreground);
+  text-shadow: 0 0 5px var(--primary), 0 0 10px var(--secondary);
+}
+
 .tweet-text {
   color: #ffffff !important; /* Blanco brillante */
   text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff; /* Sombra neón azul */
